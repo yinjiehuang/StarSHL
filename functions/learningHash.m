@@ -85,15 +85,6 @@ while (1)
         for k = 1:ker_para.num
             eval(['K = K+Thetain(k,b)*ker.K',num2str(k),';']);
         end
-%         % This area will consume most of the memory cost
-%         BigK = kron(ones(C,C,'single'),K);
-%         BigKU = BigK;
-%         clear BigK;
-%         BigKU(index0,:) = [];
-%         BigKU(:,index0) = [];
-%         tempIndex = mod(indexN0,N);
-%         tempIndex(find(tempIndex == 0)) = N;
-%         BigKU1 = K(tempIndex,:);
         
         % In order to reduce memory load, change it to loops
         PerN = N/C;
@@ -121,7 +112,6 @@ while (1)
         end
         clear tempindex temp1 tempK N0struct;
         
-%         diff = max(max(BigKU-BigKU1))
         % Step 1, solve SVM
         Num_libsvm = size(BigKU,1);
         PreKer_tr = [(1:Num_libsvm)',BigKU];
