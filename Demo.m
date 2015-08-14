@@ -42,9 +42,9 @@ switch Learning_Type
         error(['Error!!!No such learning type is supported!!!! HeHe!!!'])
 end
 
-MU = sign(rand(B,C,'single')-0.5); % Randomly intialized the codewords
+MU = sign(rand(B, C, 'single') - 0.5); % Randomly intialized the codewords
 % if there is some zero involved in the codewords, replace them
-[in0x,in0y] = find(MU == 0);
+[in0x, in0y] = find(MU == 0);
 if ~isempty(find(MU == 0))
     MU(in0x,in0y) = -1;
 end
@@ -53,7 +53,7 @@ end
 for b = 1:B
     temp = MU(b,:);
     if max(temp) == min(temp)
-        MU(b,randi(C,1,'single')) = -MU(b,randi(C,1,'single'));
+        MU(b, randi(C, 1, 'single')) = - MU(b, randi(C, 1, 'single'));
     end
 end
 clear in0x in0y temp;
@@ -64,33 +64,33 @@ ker_para.num = 11;
 ker_para.polybias = 1; % Bias of polynomial kernels
 ker_para.polydegree = 2; % Degree of polynomial kernels
 % Sigma of Gaussian Kernels
-Sigamas = [-7,-5,-3,-1,0,1,3,5,7];
+Sigamas = [-7, -5, -3, -1, 0, 1, 3, 5, 7];
 ker_para.Gsigma = 2.^Sigamas;
 % Initilize the theta
-Theta = rand(ker_para.num,B,'single');
-Theta = Theta./repmat(sum(Theta,1),ker_para.num,1);
+Theta = rand(ker_para.num, B, 'single');
+Theta = Theta ./ repmat(sum(Theta, 1), ker_para.num, 1);
 
 
 % Train the model
 fprintf('Begin training the model: \n');
-model = learningHash(train,Learning_Type,MU,Theta,ker_para);
+model = learningHash(train, Learning_Type, MU, Theta, ker_para);
 
 % Retrivel
 fprintf('\n\nTesting Phase!!!!!\n');
-hashcode = hashing(train,test,Learning_Type,model,ker_para);
+hashcode = hashing(train, test, Learning_Type, model, ker_para);
 
 % The proportion of true neighbors in top-k retrieval 
 top_k = 10;
-B1 = compactbit((model.Tr_bcode+1)/2);
-B2 = compactbit((hashcode+1)/2);
-Dhamm = hammingDist(B2,B1);
+B1 = compactbit((model.Tr_bcode + 1) / 2);
+B2 = compactbit((hashcode + 1) / 2);
+Dhamm = hammingDist(B2, B1);
 
-[Num_te,Ndimension] = size(test.te);
-Num_tr_nei_B = zeros(Num_te,1,'single');
+[Num_te, Ndimension] = size(test.te);
+Num_tr_nei_B = zeros(Num_te, 1, 'single');
 for j = 1:Num_te
-    [sorted,index] = sort(Dhamm(j,:));
+    [sorted, index] = sort(Dhamm(j, :));
     retri_L = train.Ltr_L(index(1:top_k));
-    Num_tr_nei_B(j) = sum(retri_L == repmat(test.te_L(j),top_k,1));
+    Num_tr_nei_B(j) = sum(retri_L == repmat(test.te_L(j), top_k,1 ));
 end
-result_Our = sum(Num_tr_nei_B)/(top_k*Num_te);
-fprintf('\n*********Result: %d Bits, Retrieval Accuracy: %f.*********\n\n',B,result_Our);
+result_Our = sum(Num_tr_nei_B) / (top_k * Num_te);
+fprintf('\n*********Result: %d Bits, Retrieval Accuracy: %f.*********\n\n', B, result_Our);

@@ -1,7 +1,7 @@
 function cb = compactbit(b)
 % b = bits array
 % cb = compacted string of bits (using words of 'word' bits)
-[nSamples,nbits] = size(b);
+[nSamples, nbits] = size(b);
 nwords = ceil(nbits / 8);
 cb = zeros([nSamples, nwords], 'uint8');
 
